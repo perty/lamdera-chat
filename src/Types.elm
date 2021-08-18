@@ -1,4 +1,4 @@
-module Types exposing (BackendModel, BackendMsg(..), FrontendModel, FrontendMsg(..), Message, ToBackend(..), ToFrontend(..))
+module Types exposing (BackendModel, BackendMsg(..), FrontendModel, FrontendMsg(..), Message, ToBackend(..), ToFrontend(..), ViewMode(..))
 
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
@@ -9,11 +9,18 @@ type alias Message =
     String
 
 
+type ViewMode
+    = Login
+    | Chat
+
+
 type alias FrontendModel =
     { key : Key
     , messages : List Message
     , clientId : ClientId
     , currentMessage : String
+    , viewMode : ViewMode
+    , userName : String
     }
 
 
@@ -25,8 +32,9 @@ type alias BackendModel =
 type FrontendMsg
     = UrlClicked UrlRequest
     | UrlChanged Url
-    | NoOpFrontendMsg
     | UpdateCurrentMessage String
+    | UpdateUserName String
+    | PressedLogin
     | SendMessage
 
 

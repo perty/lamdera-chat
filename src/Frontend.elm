@@ -2,7 +2,7 @@ module Frontend exposing (app)
 
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
-import Element exposing (Color, Element, column, fill, height, minimum, padding, rgb255, row, scrollbarY, text, width)
+import Element exposing (Color, Element, column, fill, height, layout, minimum, padding, rgb255, row, scrollbarY, text, width)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
@@ -34,6 +34,8 @@ init _ key =
       , messages = []
       , clientId = ""
       , currentMessage = ""
+      , viewMode = Login
+      , userName = ""
       }
     , sendToBackend LoadMessages
     )
@@ -53,7 +55,10 @@ update msg model =
         UrlChanged _ ->
             ( model, Cmd.none )
 
-        NoOpFrontendMsg ->
+        UpdateUserName string ->
+            ( { model | userName = string }, Cmd.none )
+
+        PressedLogin ->
             ( model, Cmd.none )
 
         UpdateCurrentMessage string ->
@@ -77,17 +82,38 @@ view : Model -> Browser.Document FrontendMsg
 view model =
     { title = "The chat!"
     , body =
-        [ Element.layout [ Element.width Element.fill, Element.height Element.fill ] <|
+        [ layout [ width fill, height fill ] <|
             viewChat model
         ]
     }
 
 
-viewChat : Model -> Element.Element FrontendMsg
+viewChat : Model -> Element FrontendMsg
 viewChat model =
+    case model.viewMode of
+        Login ->
+            viewLogin model
+
+        Chat ->
+            column [ width fill, height <| minimum 0 <| fill ]
+                [ viewMessages model.messages
+                , viewInput model.currentMessage
+                ]
+
+
+viewLogin : Model -> Element FrontendMsg
+viewLogin model =
     column [ width fill, height <| minimum 0 <| fill ]
-        [ viewMessages model.messages
-        , viewInput model.currentMessage
+        [ text "Please log in"
+        , row []
+            [ Input.text []
+                { text = model.userName
+                , placeholder = Nothing
+                , onChange = UpdateUserName
+                , label = Input.labelAbove [] <| text "Username"
+                }
+            , button "Log in" PressedLogin
+            ]
         ]
 
 
