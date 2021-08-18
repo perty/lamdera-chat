@@ -2,6 +2,8 @@ module Types exposing (BackendModel, BackendMsg(..), FrontendModel, FrontendMsg(
 
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
+import Dict
+import Lamdera exposing (SessionId)
 import Url exposing (Url)
 
 
@@ -26,6 +28,8 @@ type alias FrontendModel =
 
 type alias BackendModel =
     { messages : List Message
+    , sessions : Dict.Dict SessionId (List ClientId)
+    , users : Dict.Dict SessionId User
     }
 
 
@@ -39,18 +43,25 @@ type FrontendMsg
 
 
 type ToBackend
-    = LoadMessages
+    = LoginUser String
     | NewMessage String
+    | LoadMessages
 
 
 type BackendMsg
-    = NoOp
+    = ClientConnect SessionId ClientId
+    | ClientDisconnect SessionId ClientId
 
 
 type ToFrontend
-    = AllMessages (List Message) ClientId
+    = LoggedIn ClientId
+    | AllMessages (List Message) ClientId
     | NewMessages (List Message)
 
 
 type alias ClientId =
+    String
+
+
+type alias User =
     String

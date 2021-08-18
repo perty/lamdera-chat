@@ -37,7 +37,7 @@ init _ key =
       , viewMode = Login
       , userName = ""
       }
-    , sendToBackend LoadMessages
+    , Cmd.none
     )
 
 
@@ -59,7 +59,7 @@ update msg model =
             ( { model | userName = string }, Cmd.none )
 
         PressedLogin ->
-            ( model, Cmd.none )
+            ( model, sendToBackend <| LoginUser model.userName )
 
         UpdateCurrentMessage string ->
             ( { model | currentMessage = string }, Cmd.none )
@@ -76,6 +76,9 @@ updateFromBackend msg model =
 
         NewMessages messages ->
             ( { model | messages = messages }, Cmd.none )
+
+        LoggedIn clientId ->
+            ( { model | viewMode = Chat, clientId = clientId }, Cmd.none )
 
 
 view : Model -> Browser.Document FrontendMsg
