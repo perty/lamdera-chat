@@ -1,8 +1,8 @@
-module Frontend exposing (Model, app, init, update, updateFromBackend, view)
+module Frontend exposing (app)
 
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
-import Element
+import Element exposing (Color, Element, column, fill, padding, rgb255, row, text, width)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
@@ -23,13 +23,13 @@ app =
         , onUrlChange = UrlChanged
         , update = update
         , updateFromBackend = updateFromBackend
-        , subscriptions = \m -> Sub.none
+        , subscriptions = \_ -> Sub.none
         , view = view
         }
 
 
 init : Url.Url -> Nav.Key -> ( Model, Cmd FrontendMsg )
-init url key =
+init _ key =
     ( { key = key
       , messages = []
       , clientId = ""
@@ -50,7 +50,7 @@ update msg model =
                 External url ->
                     ( model, Nav.load url )
 
-        UrlChanged url ->
+        UrlChanged _ ->
             ( model, Cmd.none )
 
         NoOpFrontendMsg ->
@@ -75,7 +75,7 @@ updateFromBackend msg model =
 
 view : Model -> Browser.Document FrontendMsg
 view model =
-    { title = "The counter!"
+    { title = "The chat!"
     , body =
         [ Element.layout [ Element.width Element.fill, Element.height Element.fill ] <|
             viewChat model
@@ -85,25 +85,25 @@ view model =
 
 viewChat : Model -> Element.Element FrontendMsg
 viewChat model =
-    Element.column []
+    column [ width fill ]
         [ viewMessages model.messages
         , viewInput model.currentMessage
         ]
 
 
-viewMessages : List Message -> Element.Element msg
+viewMessages : List Message -> Element msg
 viewMessages messages =
-    Element.column [] <| List.map viewMessage messages
+    column [] <| List.map viewMessage messages
 
 
-viewMessage : Message -> Element.Element msg
+viewMessage : Message -> Element msg
 viewMessage message =
-    Element.text message
+    text message
 
 
-viewInput : String -> Element.Element FrontendMsg
+viewInput : String -> Element FrontendMsg
 viewInput currentMessage =
-    Element.row [ Element.width Element.fill ]
+    row [ width fill ]
         [ Input.text []
             { text = currentMessage
             , label = Input.labelHidden "input"
@@ -114,18 +114,18 @@ viewInput currentMessage =
         ]
 
 
-button : String -> msg -> Element.Element msg
-button text msg =
+button : String -> msg -> Element msg
+button label msg =
     Input.button
         [ Font.size 28
-        , Element.padding 10
+        , padding 10
         , Background.color buttonBackground
         , Font.center
         , Border.rounded 10
         ]
-        { label = Element.text text, onPress = Just msg }
+        { label = text label, onPress = Just msg }
 
 
-buttonBackground : Element.Color
+buttonBackground : Color
 buttonBackground =
-    Element.rgb255 0 128 0
+    rgb255 0 128 0
