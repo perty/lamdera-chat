@@ -2,7 +2,7 @@ module Frontend exposing (app)
 
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
-import Element exposing (Color, Element, column, fill, padding, rgb255, row, text, width)
+import Element exposing (Color, Element, column, fill, height, minimum, padding, rgb255, row, scrollbarY, text, width)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
@@ -85,7 +85,7 @@ view model =
 
 viewChat : Model -> Element.Element FrontendMsg
 viewChat model =
-    column [ width fill ]
+    column [ width fill, height <| minimum 0 <| fill ]
         [ viewMessages model.messages
         , viewInput model.currentMessage
         ]
@@ -93,7 +93,8 @@ viewChat model =
 
 viewMessages : List Message -> Element msg
 viewMessages messages =
-    column [] <| List.map viewMessage messages
+    column [ height <| minimum 0 <| fill, scrollbarY ] <|
+        List.map viewMessage messages
 
 
 viewMessage : Message -> Element msg
